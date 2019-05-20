@@ -1,0 +1,176 @@
+{
+  "name": "sonarlint-vscode",
+  "displayName": "SonarLint",
+  "description": "SonarLint is an IDE extension that helps you detect and fix quality issues as you write code in JavaScript, TypeScript, Python and PHP.",
+  "version": "1.7.0-SNAPSHOT",
+  "icon": "images/sonarlint_wave_128px.png",
+  "publisher": "SonarSource",
+  "homepage": "http://www.sonarlint.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SonarSource/sonarlint-vscode.git"
+  },
+  "bugs": {
+    "url": "https://jira.sonarsource.com/browse/SLVSCODE"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "keywords": [
+    "code analysis",
+    "linters"
+  ],
+  "qna": "https://community.sonarsource.com/c/help/sl",
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:python",
+    "onLanguage:php",
+    "onLanguage:vue",
+    "onLanguage:html",
+    "onLanguage:jsp",
+    "onCommand:sonarlint.updateServersAndBinding"
+  ],
+  "extensionDependency": [
+    "typescript"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "SonarLint",
+      "properties": {
+        "sonarlint.testFilePattern": {
+          "type": "string",
+          "default": "{**/test/**,**/*test*,**/*Test*}",
+          "markdownDescription": "Files whose name match this [glob pattern](https://docs.oracle.com/javase/tutorial/essential/io/fileOps.html#glob) are considered as test files by analyzers. Most rules are *not* evaluated on test files."
+        },
+        "sonarlint.analyzerProperties": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "type": "string",
+              "markdownDescription": "One entry value"
+            }
+          },
+          "markdownDescription": "Extra properties that could be passed to the code analyzers. e.g. `{\"sonar.javascript.globals\": \"xxx\"}`. See [documentation](https://redirect.sonarsource.com/doc/plugin-library.html) of each analyzers."
+        },
+        "sonarlint.disableTelemetry": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Disable sending anonymous usage statistics"
+        },
+        "sonarlint.ls.javaHome": {
+          "type": "string",
+          "markdownDescription": "Path to a JRE (8 or more recent) used to launch the SonarLint Language Server. \n\n On Windows, backslashes must be escaped, e.g. `C:\\\\Program Files\\\\Java\\\\jdk1.8.0_161`",
+          "scope": "window"
+        },
+        "sonarlint.ls.vmargs": {
+          "type": "string",
+          "markdownDescription": "Extra JVM arguments used to launch the SonarLint Language Server. e.g. `-Xmx1024m`",
+          "scope": "window"
+        },
+        "sonarlint.connectedMode.servers": {
+          "type": "array",
+          "scope": "application",
+          "default": [],
+          "markdownDescription": "Configure the connection(s) to SonarQube/SonarCloud. For security reasons, the token should not be stored in SCM with workspace settings.\n\nExample:\n\n    \"sonarlint.connectedMode.servers\": [\n      {\n        \"serverId\": \"my_orga_in_sonarcloud.io\",\n        \"serverUrl\": \"https://sonarcloud.io\",\n        \"organizationKey\": \"my_organization\",\n        \"token\": \"V2VkIE1...\"\n      }\n    ]",
+          "items": {
+            "properties": {
+              "serverId": {
+                "type": "string",
+                "description": "A unique identifier for this server connection. Will be referenced from `#sonarlint.connectedMode.project#`",
+                "default": ""
+              },
+              "serverUrl": {
+                "type": "string",
+                "description": "URL of the server. Use https://sonarcloud.io for SonarCloud.",
+                "default": ""
+              },
+              "token": {
+                "type": "string",
+                "description": "Token generated from My Account>Security in SonarQube/SonarCloud",
+                "default": ""
+              },
+              "organizationKey": {
+                "type": "string",
+                "description": "Only used for SonarCloud",
+                "default": ""
+              }
+            }
+          }
+        },
+        "sonarlint.connectedMode.project": {
+          "type": "object",
+          "default": {},
+          "markdownDescription": "Specify to which SonarQube/SonarCloud project the current project is bound. Connected mode allows to use the same code analyzers, rules and configuration that are defined in the server.\n\nExample:\n\n    \"sonarlint.connectedMode.project\": {\n      \"serverId\": \"my_orga_in_sonarcloud.io\",\n      \"projectKey\": \"my_project\"\n    }",
+          "properties": {
+            "serverId": {
+              "type": "string",
+              "description": "Identifier of the server connection declared in `#sonarlint.connectedMode.servers#`",
+              "default": ""
+            },
+            "projectKey": {
+              "type": "string",
+              "description": "Key of the project in SonarQube/SonarCloud",
+              "default": ""
+            }
+          }
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "sonarlint.updateServersAndBinding",
+        "title": "Update SonarLint binding to SonarQube/SonarCloud"
+      }
+    ]
+  },
+  "main": "./out/src/extension",
+  "files": [
+    "server/sonarlint-ls.jar"
+  ],
+  "scripts": {
+    "vscode:prepublish": "./node_modules/.bin/tsc -p ./ && node scripts/prepare.js",
+    "compile": "./node_modules/.bin/tsc -p ./",
+    "watch": "./node_modules/.bin/tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "dependencies": {
+    "expand-home-dir": "0.0.3",
+    "find-java-home": "0.2.0",
+    "open": "6.0.0",
+    "path-exists": "3.0.0",
+    "vscode-languageclient": "5.2.1"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.14.6",
+    "crypto": "^0.0.3",
+    "dateformat": "^2.0.0",
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-artifactory-upload": "^1.3.0",
+    "gulp-bump": "^2.7.0",
+    "gulp-cli": "^2.2.0",
+    "gulp-download": "^0.0.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-util": "^3.0.8",
+    "mocha": "^5.1.1",
+    "sonarqube-scanner": "^2.4.0",
+    "through2": "^2.0.5",
+    "typescript": "^2.9.2",
+    "vsce": "^1.61.0",
+    "vscode": "^1.1.21"
+  },
+  "prettier": {
+    "jsxBracketSameLine": true,
+    "printWidth": 100,
+    "singleQuote": true
+  }
+}
